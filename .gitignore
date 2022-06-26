@@ -1,3 +1,4 @@
 node_modules
 saves/*.json
 .env
+dist

@@ -300,7 +300,7 @@ export function limitAttribute(attr: number) {
 }
 
 export function formatAttribute(attr: number) {
-  return attr.toLocaleString("pt-BR");
+  return attr.toLocaleString();
 }
 
 export function hasDMPermissions(member: GuildMember, DMrole: Snowflake) {

@@ -3,6 +3,7 @@ import {
   AutocompleteInteraction,
   CommandInteraction,
   ContextMenuInteraction,
+  Interaction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "discord.js";

@@ -1,13 +1,18 @@
-const rogscript = require("./rogscript.js");
+import chalk from "chalk";
+import { GuildMember } from "discord.js";
+import { Player } from "../rog";
+import { AttributeList } from "../types/rogscript";
+import { ellipsis, normalizeStr } from "../utils";
+import { parse } from "./rogscript";
 
 const repeatRegex = /^(\d+)#/;
 
-function parseLine(input="", attributes, variables) {
+export function parseLine(input:string, attributes?:AttributeList, variables?:AttributeList) {
   let results = [];
   let dice = 0;
   attributes = attributes ?? new Map();
   variables = variables ?? new Map();
-  const repeatExp = input.match(repeatRegex) ?? ["", 1];
+  const repeatExp = input.match(repeatRegex) ?? ["", "1"];
 
   input = input.slice(repeatExp[0].length).trim();
   let repeat = parseInt(repeatExp[1], 10);
@@ -17,7 +22,7 @@ function parseLine(input="", attributes, variables) {
     if (dice >= 1000) {
       throw Error("Número de dados por linha excedeu o limite de 1000.");
     }
-    let currentResult = rogscript.parse(input, { attributes, variables });
+    let currentResult = parse(input, { attributes, variables });
     dice      += currentResult.dice;
     attributes = currentResult.attributes;
     variables  = currentResult.variables;
@@ -33,7 +38,7 @@ function parseLine(input="", attributes, variables) {
   };
 }
 
-function parseBlock(input, attributes, variables) {
+export function parseBlock(input:string, attributes?:AttributeList, variables?:AttributeList) {
   let results = [];
   let dice = 0;
   let lineCount = 0;
@@ -61,7 +66,30 @@ function parseBlock(input, attributes, variables) {
   };
 }
 
-module.exports = {
-  parseBlock,
-  parseLine
+export function evaluateRoll(text:string, player:Player, member:GuildMember, rollMode=1, variables?:AttributeList) {
+  let content = normalizeStr(text);
+  let roll;
+
+  try {
+    if (rollMode === 2) {
+      roll = parseBlock(content, player.card?.attributes, variables);
+    } else {
+      roll = parseLine(content, player.card?.attributes, variables);
+    }
+
+    if (roll.dice || rollMode) {
+      let results = roll.results.reduce((a,b) => `${a}${b.text}\n`, "");
+      results = ellipsis(results);
+      
+      if (player.card) {
+        player.card.setAttrBulk(roll.attributes);
+        if (member) player.updateSuffix(member);
+      }
+
+      return results;
+    }
+  } catch (e) {
+    if (process.env.PARSER_ERRORS) console.error(chalk.red(e));
+    return null;
+  }
 }
