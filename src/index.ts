@@ -39,7 +39,7 @@ for (const saveFile of saveFiles) {
   client.instances.set(instance.id, new Instance(instance));
 }
 
-client.on("ready", async () => {
+client.once("ready", async () => {
   console.log("Pronto!");
 
   const guilds = client.guilds.cache;

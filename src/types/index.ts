@@ -78,7 +78,3 @@ export interface FroxClient extends Client {
 
   saveInstances: () => Promise<void>;
 }
-
-export interface InteractionModel {
-  execute: (interaction: Interaction, client: FroxClient) => Promise<unknown>;
-}

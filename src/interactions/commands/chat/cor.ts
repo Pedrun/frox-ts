@@ -36,5 +36,5 @@ function isColorHex(hex: string): hex is `#${string}` {
   return colorRegex.test(hex);
 }
 
-const colorRegex = /^#?[0-9a-f]{6}$/i;
+const colorRegex = /^#[0-9a-f]{6}$/i;
 export { model as default };
