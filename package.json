@@ -8,9 +8,15 @@
     "@discordjs/builders": "^0.15.0",
     "chalk": "4",
     "discord.js": "^13.8.1",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "string-similarity": "^4.0.4"
   },
   "devDependencies": {
     "@discordjs/rest": "^0.5.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "saves/**"
+    ]
   }
 }

@@ -1,4 +1,4 @@
-import Discord, { Intents, Interaction } from "discord.js";
+import Discord, { Intents } from "discord.js";
 import path from "path";
 import fs from "fs";
 import chalk from "chalk";
@@ -9,9 +9,7 @@ import dotenv from "dotenv";
 import * as handlers from "./interactions/handlers";
 import { evaluateRoll } from "./parser";
 
-const saveFiles = fs
-  .readdirSync("./saves")
-  .filter((f) => f.endsWith(".json"));
+const saveFiles = fs.readdirSync("./saves").filter((f) => f.endsWith(".json"));
 const client = <FroxClient>new Discord.Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -26,7 +24,7 @@ client.instances = new InstanceManager();
 
 client.saveInstances = async function () {
   client.instances.each((instance) => {
-    fs.writeFileSync(`./saves/${instance.id}.json`, JSON.stringify(instance));
+    fs.writeFileSync(`./saves/${instance.id}.json`, JSON.stringify(instance, null, "\t"));
   });
   console.log(
     `[${chalk.greenBright(
@@ -104,9 +102,9 @@ client.on("messageCreate", (message) => {
   }
 });
 
-async function main() {
+(async () => {
   await loadInteractions(client, path.join(__dirname, "interactions"));
   await client.login();
   setInterval(client.saveInstances, 1800000);
-}
-main();
+  client.saveInstances();
+})();
